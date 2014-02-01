@@ -68,7 +68,7 @@ function setup(options, imports, register) {
         });
 
         socket.on('shell.destroy', function (data) {
-            shells_rpc.destroy(data)
+            shells_rpc.kill(data)
             .then(function() {
                 events.emit('shell.destroy', data);
             });

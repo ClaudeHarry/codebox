@@ -108,6 +108,7 @@ ProjectRunner.prototype.getUrl = function(port) {
 
 ProjectRunner.prototype.killProject = function(runnerId) {
     var d = Q.defer();
+    var gracefulExit = Q.defer();
 
     var shellId = this.projects[runnerId];
     var shell = shellId ? this.shells.shells[shellId] : null;
@@ -115,9 +116,18 @@ ProjectRunner.prototype.killProject = function(runnerId) {
         return Q.reject('No project shell to kill for: '+runnerId);
     }
 
-    shell.ps.once('exit', d.resolve);
+    shell.ps.once('exit', gracefulExit.resolve);
+    shell.ps.kill('SIGTERM');
 
-    shell.ps.destroy();
+    // 500ms cleanup time
+    Q.timeout(gracefulExit.promise, 500)
+    .then(
+        d.resolve,
+        function() {
+            shell.ps.once('exit', d.resolve);
+            shell.ps.destroy();
+        }
+    );
 
     return d.promise;
 };

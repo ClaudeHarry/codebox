@@ -70,10 +70,11 @@ function cleanup {
     # Remove folder on exit
     echo "Cleaning up ${FOLDER}"
     rm -rf ${FOLDER}
+    exit
 }
 
 # Cleanup when killed
-trap cleanup EXIT INT
+trap cleanup EXIT INT TERM
 
 # Run apache process in foreground
 echo "Running apache2 on ${WORKSPACE} (${FOLDER})"

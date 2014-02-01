@@ -34,6 +34,14 @@ ShellsRPCService.prototype.destroy = function(args) {
     });
 };
 
+ShellsRPCService.prototype.kill = function(args) {
+    args.id = args.id || args.shellId;
+    return this._getShell(args.id)
+    .then(function(shell) {
+        return shell.kill(args.signal);
+    });
+};
+
 ShellsRPCService.prototype.resize = function(args) {
     args.id = args.id || args.shellId;
     return this._getShell(args.id)
